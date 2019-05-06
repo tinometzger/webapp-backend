@@ -14,12 +14,12 @@ var db = mysql.createConnection({
  * @param beschreibung
  * @returns {Promise<any>}
  */
-const addStudienarbeit = (betreuerID, bezeichnung, beschreibung) =>
+const addStudienarbeit = (betreuerid, bezeichnung, beschreibung) =>
     new Promise((resolve, reject) => {
         console.log("Connected!");
         let studienarbeitID;
         let sql = "INSERT INTO studienarbeit (betreuerID, bezeichnung, beschreibung, aufwandBetreuer, aufwandStudierende) "
-            + "VALUES ('" + betreuerID + "','" + bezeichnung + "','" + beschreibung + "','0','0')";
+            + "VALUES ('" + betreuerid + "','" + bezeichnung + "','" + beschreibung + "','0','0')";
         db.query(sql, function (err, result) {
             console.log('result: ');
             console.log(result);
@@ -31,8 +31,8 @@ const addStudienarbeit = (betreuerID, bezeichnung, beschreibung) =>
                 studienarbeitID = result.studienarbeitid;
             }
         });
-        sql = "INSERT INTO studienarbeit_betreuer_studierende (studienarbeitID, betreuerID, studierendeID) "
-            + "VALUES ('" + studienarbeitID + "','" + betreuerID + "','0')";
+        sql = "INSERT INTO studienarbeit_betreuer_studierende (studienarbeitID, studierendeID) "
+            + "VALUES ('" + "1" + "',"  + "'" + "0" + "')";
         db.query(sql, function (err, result) {
             if (err) {
                 throw err;
@@ -67,6 +67,30 @@ const getStudienarbeitById = (id) =>
         });
     });
 
+const getTermintype = () =>
+    new Promise((resolve, reject) => {
+        console.log("Connected!");
+        let sql = "SELECT * FROM termintype";
+        db.query(sql, function (err, result) {
+            if (err) {
+                throw err;
+                console.log(err);
+            } else {
+                console.log("Termintype successfully returned");
+            }
+            let jsonResultArray = [];
+            for(let i = 0; i < result.length; i++) {
+                let jsonResult = {
+                    "id": result[i].id,
+                    "bezeichnung": result[i].bezeichnung,
+                    "ort": result[i].ort
+                };
+                jsonResultArray.push(jsonResult);
+            }
+            resolve(jsonResultArray);
+        });
+    });
+
 
 
 /**
@@ -74,5 +98,6 @@ const getStudienarbeitById = (id) =>
  */
 module.exports = {
     addStudienarbeit,
-    getStudienarbeitById
+    getStudienarbeitById,
+    getTermintype
 };
