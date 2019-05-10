@@ -91,6 +91,67 @@ const getTermintype = () =>
         });
     });
 
+const addTermin = (typeid, zeitpunkt, studienarbeitsid) =>
+    new Promise((resolve, reject) => {
+        console.log("Connected!");
+        let sql = "INSERT INTO termin (typeid, zeitpunkt, studienarbeitsID) "
+            + "VALUES ('" + typeid + "','" + zeitpunkt + "','" + studienarbeitsid + "')";
+        db.query(sql, function (err, result) {
+            console.log('result: ');
+            console.log(result);
+            if (err) {
+                throw err;
+                console.log(err);
+            } else {
+                console.log("Termin successfully added");
+            }
+        });
+    });
+
+const getTerminByStudienarbeitsID = (id) =>
+    new Promise((resolve, reject) => {
+        console.log("Connected!");
+        let sql = "SELECT * FROM termin WHERE studienarbeitsID = '" + id + "'";
+        db.query(sql, function (err, result) {
+            if (err) {
+                throw err;
+                console.log(err);
+            } else {
+                console.log("Termine successfully returned");
+            }
+            console.log(result);
+
+            let jsonResultArray = [];
+            for(let i = 0; i < result.length; i++) {
+                let jsonResult = {
+                    "id": result[i].id,
+                    "typeID": result[i].typeID,
+                    "zeitpunkt": result[i].zeitpunkt,
+                    "notizen": result[i].notizen,
+                    "aufwand": result[i].aufwand
+                };
+                jsonResultArray.push(jsonResult);
+            }
+            resolve(jsonResultArray);
+        });
+    });
+
+const updateTermin = (id,typeID, zeitpunkt, notizen, aufwand) =>
+    new Promise((resolve, reject) => {
+        console.log("Connected!");
+        let sql = "UPDATE termin SET typeID = '" + typeID + "', zeitpunkt = '" + zeitpunkt + "', notizen = '" + notizen + "', aufwand = '"
+            + aufwand + "' WHERE id = " + id;
+        db.query(sql, function (err, result) {
+            if (err) {
+                throw err;
+                console.log(err);
+            } else {
+                console.log("Termin successfully updated");
+            }
+            resolve(result);
+        });
+});
+
 
 
 /**
@@ -99,5 +160,8 @@ const getTermintype = () =>
 module.exports = {
     addStudienarbeit,
     getStudienarbeitById,
-    getTermintype
+    getTermintype,
+    addTermin,
+    getTerminByStudienarbeitsID,
+    updateTermin
 };
