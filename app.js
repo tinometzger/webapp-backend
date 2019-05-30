@@ -7,6 +7,8 @@ let logger = require('morgan');
 let fs = require('fs');
 let app = express();
 const formidableMiddleware = require('express-formidable');
+let LdapStrategy = require('passport-ldapauth');
+let passport     = require('passport');
 let databaseutils = require('./databaseutils');
 app.use(cors());
 
@@ -17,6 +19,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 let formidable = require('formidable');
+
+
 
 /**
  * Post route to add a studienarbeit
@@ -42,39 +46,97 @@ app.post("/termin/add", async function (req, res) {
     res.send(result);
 });
 
-app.get("/termin/getbystudid", async function (req, res) {
+
+app.put("/termin/update/:id", async function (req, res) {
+
+} );
+
+app.get("/termin/get/:studienarbeitsid", async function (req, res) {
     console.log("Getting");
-    let result = await databaseutils.getTerminByStudienarbeitsID(req.query.studienarbeitsid);
+    let result = await databaseutils.getTerminByStudienarbeitsID(req.params.studienarbeitsid);
     console.log(result);
     res.send(result);
 });
 
-app.post("/termin/update", async function (req, res) {
+app.put("/termin/update/:id", async function (req, res) {
     console.log("Posting");
-    let result = await databaseutils.updateTermin(req.body.id, req.body.typeID, req.body.zeitpunkt, req.body.aufwand, req.body.notizen);
+    let result = await databaseutils.updateTermin(req.params.id, req.body.typeID, req.body.zeitpunkt, req.body.aufwand, req.body.notizen);
     console.log(result);
     res.send(result);
 });
+
 
 app.post("/upload", function (req, res) {
     console.log("Uploading");
     let form = new formidable.IncomingForm();
+    form.maxFileSize = 10 * 1024 * 1024;
+
+    form.on("fileBegin", function (name, file) {
+      let dir = __dirname + '/termine/temp/';
+      file.path = dir + file.name;
+    });
+
     form.parse(req, function (err, fields, files) {
 
-        let dir =__dirname + '/termine/' + fields.id;
-        if (!fs.existsSync(dir)) {
+        let dir = __dirname + "/termine/" + fields.id;
+        if(!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
+        } else {
+            fs.readdir(dir, function (err, files) {
+                if(files.length > 0) {
+                    fs.unlinkSync(dir + "/" + files[0]);
+                }
+            })
         }
 
-        let oldpath = files.file.path;
-        let newpath = dir;
+        let oldpath = __dirname + "/termine/temp/" + files.file.name;
+        let newpath = dir + "/" + files.file.name;
         fs.rename(oldpath, newpath, function (err) {
             if (err) throw err;
             res.write('File uploaded and moved!');
+            databaseutils.setNotizenName(fields.id);
             res.end();
         });
     });
 });
+
+app.get('/download/termine/:terminid/:filename', function(req, res){
+    const file = `${__dirname}/termine/` + req.params.terminid +  `/` + req.params.filename;
+    res.download(file);
+});
+
+/**
+ *      AUTH AREA   START
+ **/
+
+const OPTS = {
+    server: {
+        url: 'ldaps://feldberg-nas.dhbw-stuttgart.de:636',
+        bindDN: 'uid=root,cn=users,dc=feldberg-nas,dc=dhbw-stuttgart,dc=de',
+        bindCredentials: `tinometzger`,
+        searchBase: 'cn=users',
+        searchFilter: `uid=tinometzger`,
+        searchAttributes: ['uidNumber', 'sn'],
+        reconnect: true
+    }
+};
+passport.use(new LdapStrategy(OPTS));
+app.use(passport.initialize());
+
+app.post('/ldap/login', passport.authenticate('ldapauth', {session: false}), function(req, res) {
+    console.log("hallo");
+    console.log(req.body);
+    res.send({status: 'ok'});
+});
+
+/*
+app.get("/ldap/user", ensureAuthenticated, function (req, res) {
+    res.json({success: true, user:req.user})
+});*/
+
+/**
+ *      AUTH AREA   END
+ */
 
 
 /**

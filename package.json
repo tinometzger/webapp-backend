@@ -17,6 +17,8 @@
     "express-formidable": "^1.2.0",
     "formidable": "^1.2.1",
     "morgan": "^1.9.1",
-    "mysql": "^2.16.0"
+    "mysql": "^2.16.0",
+    "passport": "^0.4.0",
+    "passport-ldapauth": "^2.1.3"
   }
 }

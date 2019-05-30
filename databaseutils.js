@@ -152,6 +152,21 @@ const updateTermin = (id,typeID, zeitpunkt, notizen, aufwand) =>
         });
 });
 
+const setNotizenName = (id, name) =>
+    new Promise((resolve, reject) => {
+        console.log("Connected!");
+        let sql = "UPDATE termin SET notizen = '" + name + "' WHERE id = " + id;
+        db.query(sql, function (err, result) {
+            if (err) {
+                throw err;
+                console.log(err);
+            } else {
+                console.log("Termin successfully updated");
+            }
+            resolve(result);
+        });
+    });
+
 
 
 /**
@@ -163,5 +178,6 @@ module.exports = {
     getTermintype,
     addTermin,
     getTerminByStudienarbeitsID,
-    updateTermin
+    updateTermin,
+    setNotizenName
 };
