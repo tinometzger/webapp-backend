@@ -145,6 +145,8 @@ app.post("/upload", function (req, res) {
     });
 });
 
+
+
 app.get('/download/termine/:terminid/:filename', function(req, res){
     res.download(__dirname + '/termine/' + req.params.terminid + "/" + req.params.filename, req.params.filename);
 });
@@ -176,6 +178,28 @@ app.post('/ldap/login', passport.authenticate('ldapauth', {session: false}), fun
 app.get("/download/notizentemplate", async function (req, res) {
     res.download(__dirname + '/termine/template/NotizenStandardDokument.docx');
 });
+
+app.get("/wiki/get", async function (req, res) {
+    console.log("Getting");
+    let result = await databaseutils.getWikiEintraege();
+    console.log(result);
+    res.send(result);
+});
+
+app.post("/wiki/add", async function (req, res) {
+    console.log("Posting");
+    let result = await databaseutils.addWikiEintrag(req.body.autor, req.body.titel, req.body.inhalt, req.body.datum);
+    console.log(result);
+    res.send(result);
+});
+
+app.put("wiki/update/:id", async function (req, res) {
+    console.log("Putting");
+    let result = await databaseutils.updateWikiEintrag(req.params.id, req.body.autor, req.body.titel, req.body.inhalt, req.body.datum);
+    console.log(result);
+    res.send(result);
+});
+
 
 /*
 app.get("/ldap/user", ensureAuthenticated, function (req, res) {

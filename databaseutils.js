@@ -313,6 +313,65 @@ const selectStudienarbeit = (studienarbeitID, anzahlStudierende, studierendeID) 
        });
     });
 
+const addWikiEintrag = (autor, titel, inhalt, datum) =>
+    new Promise((resolve, reject) => {
+        console.log("Connected!");
+        let sql = "INSERT INTO wikieintrag (autor, titel, inhalt, datum) "
+            + "VALUES ('" + autor + "','" + titel + "','" + inhalt + "','" +  datum + "')";
+        db.query(sql, function (err, result) {
+            console.log('result: ');
+            console.log(result);
+            if (err) {
+                throw err;
+                console.log(err);
+            } else {
+                console.log("Wiki-Eintrag successfully added");
+            }
+        });
+    });
+
+const getWikiEintraege = () =>
+    new Promise((resolve, reject) => {
+        console.log("Connected!");
+        let sql = "SELECT * FROM wikieintrag";
+        db.query(sql, function (err, result) {
+            if (err) {
+                throw err;
+                console.log(err);
+            } else {
+                console.log("Wiki-Eintraege successfully returned");
+            }
+            let jsonResultArray = [];
+            for(let i = 0; i < result.length; i++) {
+                let jsonResult = {
+                    "id": result[i].id,
+                    "autor": result[i].autor,
+                    "titel": result[i].titel,
+                    "datum": result[i].datum,
+                };
+                jsonResultArray.push(jsonResult);
+            }
+            resolve(jsonResultArray);
+        });
+    });
+
+
+const updateWikiEintrag = (id, autor, titel, inhalt, datum) =>
+    new Promise((resolve, reject) => {
+        console.log("Connected!");
+        let sql = "UPDATE wikieintrag SET autor = '" + autor + "', titel = '" + titel + "', inhalt = '" + inhalt + "', datum = '"
+            + datum + "' WHERE id = " + id;
+        db.query(sql, function (err, result) {
+            if (err) {
+                throw err;
+                console.log(err);
+            } else {
+                console.log("Wiki-Eintrag successfully updated");
+            }
+            resolve(result);
+        });
+    });
+
 /**
  * Exported functions from module
  */
@@ -329,5 +388,9 @@ module.exports = {
     setNotizenName,
     getUnselectedStudienarbeit,
     selectStudienarbeit,
-    getStudienarbeitByBetreuerId
+    getStudienarbeitByBetreuerId,
+    addWikiEintrag,
+    getWikiEintraege,
+    updateWikiEintrag
+
 };

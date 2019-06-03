@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 03. Jun 2019 um 17:19
+-- Erstellungszeit: 03. Jun 2019 um 22:38
 -- Server-Version: 10.1.38-MariaDB
 -- PHP-Version: 7.3.4
 
@@ -46,7 +46,8 @@ INSERT INTO `studienarbeit` (`id`, `betreuerID`, `bezeichnung`, `beschreibung`, 
 (1, 0, 'Studienarbeit 1', 'TEST 1111111', 1, 0, 0),
 (3, 0, 'Studienarbeit 2', 'TEST 22222222', 2, 0, 0),
 (4, 1, 'Algorithmusentwicklung', 'Es sollen folgende Algorithmen entworfen werden..', 1, 0, 0),
-(14, 1, 'Implementierung einer Webapp', 'Es soll eine Webapp implementiert werden', 1, 0, 0);
+(14, 1, 'Implementierung einer Webapp', 'Es soll eine Webapp implementiert werden', 1, 0, 0),
+(17, 1, 'Implementierung einer Webapp', 'asd', 2, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -67,7 +68,10 @@ CREATE TABLE `studienarbeit_betreuer_studierende` (
 INSERT INTO `studienarbeit_betreuer_studierende` (`id`, `studienarbeitID`, `studierendeID`) VALUES
 (1, 1, 2),
 (2, 2, 0),
-(8, 14, 3);
+(8, 14, 3),
+(10, 1, 0),
+(11, 1, 0),
+(12, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -120,16 +124,24 @@ INSERT INTO `termintype` (`id`, `bezeichnung`, `ort`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `wiki-eintrag`
+-- Tabellenstruktur für Tabelle `wikieintrag`
 --
 
-CREATE TABLE `wiki-eintrag` (
+CREATE TABLE `wikieintrag` (
   `id` int(11) NOT NULL,
   `autor` int(11) NOT NULL,
   `titel` varchar(50) NOT NULL,
   `inhalt` varchar(3000) NOT NULL,
-  `datum` datetime NOT NULL
+  `datum` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Daten für Tabelle `wikieintrag`
+--
+
+INSERT INTO `wikieintrag` (`id`, `autor`, `titel`, `inhalt`, `datum`) VALUES
+(1, 1, 'Erstes Treffen', 'Erstes Treffen in der DH am Dienstag', '2019/05/05'),
+(2, 1, 'test', 'titel', 'Mon Jun 03 2019 22:36:13 GMT+0200 (Mitteleuropäische Sommerzeit)');
 
 --
 -- Indizes der exportierten Tabellen
@@ -160,9 +172,9 @@ ALTER TABLE `termintype`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indizes für die Tabelle `wiki-eintrag`
+-- Indizes für die Tabelle `wikieintrag`
 --
-ALTER TABLE `wiki-eintrag`
+ALTER TABLE `wikieintrag`
   ADD PRIMARY KEY (`id`),
   ADD KEY `autor` (`autor`);
 
@@ -174,13 +186,13 @@ ALTER TABLE `wiki-eintrag`
 -- AUTO_INCREMENT für Tabelle `studienarbeit`
 --
 ALTER TABLE `studienarbeit`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT für Tabelle `studienarbeit_betreuer_studierende`
 --
 ALTER TABLE `studienarbeit_betreuer_studierende`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT für Tabelle `termin`
@@ -195,10 +207,10 @@ ALTER TABLE `termintype`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT für Tabelle `wiki-eintrag`
+-- AUTO_INCREMENT für Tabelle `wikieintrag`
 --
-ALTER TABLE `wiki-eintrag`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `wikieintrag`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
