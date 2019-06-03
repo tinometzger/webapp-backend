@@ -27,13 +27,56 @@ let formidable = require('formidable');
  */
 app.post("/studienarbeit/add", async function (req, res) {
     console.log("Posting");
-    let result = await databaseutils.addStudienarbeit(req.body.betreuerid, req.body.bezeichnung, req.body.beschreibung);
+    let result = await databaseutils.addStudienarbeit(req.body.betreuerid, req.body.bezeichnung, req.body.beschreibung, req.body.anzahl);
+    console.log(result);
+    res.send(result);
+});
+
+app.delete("/studienarbeit/delete/:id", async function (req, res) {
+    console.log("Posting");
+    let result = await databaseutils.deleteStudienarbeit(req.params.id);
+    console.log(result);
+    res.send(result);
+});
+
+
+app.get("/studienarbeit/get/unselected", async function (req,res) {
+    console.log("Getting");
+    let result = await databaseutils.getUnselectedStudienarbeit();
+    console.log(result);
+    res.send(result);
+});
+
+app.put("/studienarbeit/select", async function (req, res) {
+   console.log("Putting");
+   let result = await databaseutils.selectStudienarbeit(req.body.studienarbeitID, req.body.anzahlStudierende, req.body.studierendeID);
+   console.log(result);
+   res.send(result);
+});
+
+app.get("/studienarbeit/get/:studienarbeitsid", async function (req,res) {
+    console.log("Getting");
+    let result = await databaseutils.getStudienarbeitById(req.params.studienarbeitsid);
+    console.log(result);
+    res.send(result);
+});
+
+app.get("/studienarbeit/getByBetreuer/:betreuerid", async function (req,res) {
+    console.log("Getting");
+    let result = await databaseutils.getStudienarbeitByBetreuerId(req.params.betreuerid);
+    console.log(result);
+    res.send(result);
+});
+
+app.put("/studienarbeit/update/:id", async function (req,res) {
+   console.log("Putting");
+    let result = await databaseutils.updateTermin(req.params.id, req.body.betreuerID, req.body.bezeichnung, req.body.beschreibung, req.body.anzahlStudierende, req.body.aufwandBetreuer, req.body.aufwandStudierende);
     console.log(result);
     res.send(result);
 });
 
 app.get("/termintype/get", async function (req, res) {
-    console.log("Getting termintype");
+    console.log("Getting");
     let result = await databaseutils.getTermintype();
     console.log(result);
     res.send(result);
@@ -46,10 +89,12 @@ app.post("/termin/add", async function (req, res) {
     res.send(result);
 });
 
-
-app.put("/termin/update/:id", async function (req, res) {
-
-} );
+app.delete("/termin/delete/:id", async function (req, res) {
+    console.log("Posting");
+    let result = await databaseutils.deleteTermin(req.params.id);
+    console.log(result);
+    res.send(result);
+});
 
 app.get("/termin/get/:studienarbeitsid", async function (req, res) {
     console.log("Getting");
@@ -59,7 +104,7 @@ app.get("/termin/get/:studienarbeitsid", async function (req, res) {
 });
 
 app.put("/termin/update/:id", async function (req, res) {
-    console.log("Posting");
+    console.log("Putting");
     let result = await databaseutils.updateTermin(req.params.id, req.body.typeID, req.body.zeitpunkt, req.body.aufwand, req.body.notizen);
     console.log(result);
     res.send(result);
@@ -101,8 +146,7 @@ app.post("/upload", function (req, res) {
 });
 
 app.get('/download/termine/:terminid/:filename', function(req, res){
-    const file = `${__dirname}/termine/` + req.params.terminid +  `/` + req.params.filename;
-    res.download(file);
+    res.download(__dirname + '/termine/' + req.params.terminid + "/" + req.params.filename, req.params.filename);
 });
 
 /**
@@ -127,6 +171,10 @@ app.post('/ldap/login', passport.authenticate('ldapauth', {session: false}), fun
     console.log("hallo");
     console.log(req.body);
     res.send({status: 'ok'});
+});
+
+app.get("/download/notizentemplate", async function (req, res) {
+    res.download(__dirname + '/termine/template/NotizenStandardDokument.docx');
 });
 
 /*

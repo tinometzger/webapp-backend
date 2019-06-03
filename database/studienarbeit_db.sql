@@ -1,13 +1,15 @@
 -- phpMyAdmin SQL Dump
--- version 4.5.1
--- http://www.phpmyadmin.net
+-- version 4.8.5
+-- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 16. Apr 2019 um 15:48
--- Server-Version: 10.1.16-MariaDB
--- PHP-Version: 5.6.24
+-- Erstellungszeit: 03. Jun 2019 um 17:19
+-- Server-Version: 10.1.38-MariaDB
+-- PHP-Version: 7.3.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -23,28 +25,6 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `benutzer`
---
-
-CREATE TABLE `benutzer` (
-  `id` int(11) NOT NULL,
-  `name` varchar(30) NOT NULL,
-  `rolle` varchar(10) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Daten für Tabelle `benutzer`
---
-
-INSERT INTO `benutzer` (`id`, `name`, `rolle`) VALUES
-(1, 'Max Betreuer', 'b'),
-(2, 'Lisa Betreuerin', 'b'),
-(3, 'karl student', 's'),
-(4, 'hanna student', 's');
-
--- --------------------------------------------------------
-
---
 -- Tabellenstruktur für Tabelle `studienarbeit`
 --
 
@@ -53,6 +33,7 @@ CREATE TABLE `studienarbeit` (
   `betreuerID` int(11) NOT NULL,
   `bezeichnung` varchar(100) NOT NULL,
   `beschreibung` varchar(5000) NOT NULL,
+  `anzahlStudierende` int(11) NOT NULL,
   `aufwandBetreuer` float NOT NULL,
   `aufwandStudierende` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -61,13 +42,11 @@ CREATE TABLE `studienarbeit` (
 -- Daten für Tabelle `studienarbeit`
 --
 
-INSERT INTO `studienarbeit` (`id`, `betreuerID`, `bezeichnung`, `beschreibung`, `aufwandBetreuer`, `aufwandStudierende`) VALUES
-(1, 0, 'Studienarbeit 1', 'TEST 1111111', 0, 0),
-(2, 0, 'Studienarbeit 1', 'TEST 1111111', 0, 0),
-(3, 0, 'Studienarbeit 2', 'TEST 22222222', 0, 0),
-(4, 1, 'ErsteNeueArbeit', 'beschreibung der ersten neuen Arbeit', 0, 0),
-(5, 0, 'ErsteNeueArbeit', 'beschreibung der ersten neuen Arbeit', 0, 0),
-(6, 0, 'ErsteNeueArbeit', 'beschreibung der ersten neuen Arbeit', 0, 0);
+INSERT INTO `studienarbeit` (`id`, `betreuerID`, `bezeichnung`, `beschreibung`, `anzahlStudierende`, `aufwandBetreuer`, `aufwandStudierende`) VALUES
+(1, 0, 'Studienarbeit 1', 'TEST 1111111', 1, 0, 0),
+(3, 0, 'Studienarbeit 2', 'TEST 22222222', 2, 0, 0),
+(4, 1, 'Algorithmusentwicklung', 'Es sollen folgende Algorithmen entworfen werden..', 1, 0, 0),
+(14, 1, 'Implementierung einer Webapp', 'Es soll eine Webapp implementiert werden', 1, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -86,8 +65,9 @@ CREATE TABLE `studienarbeit_betreuer_studierende` (
 --
 
 INSERT INTO `studienarbeit_betreuer_studierende` (`id`, `studienarbeitID`, `studierendeID`) VALUES
-(1, 1, 0),
-(2, 2, 0);
+(1, 1, 2),
+(2, 2, 0),
+(8, 14, 3);
 
 -- --------------------------------------------------------
 
@@ -104,6 +84,17 @@ CREATE TABLE `termin` (
   `studienarbeitsID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Daten für Tabelle `termin`
+--
+
+INSERT INTO `termin` (`id`, `typeID`, `zeitpunkt`, `notizen`, `aufwand`, `studienarbeitsID`) VALUES
+(4, 3, '2019-06-27 08:19:00', '', 0, 4),
+(7, 1, '2019-05-10 14:20:55', 'uebung02.pdf', 0, 14),
+(8, 2, '2019-05-31 21:41:00', '', 0, 14),
+(9, 4, '2019-06-13 12:55:00', '', 0, 14),
+(10, 2, '2019-06-13 00:00:00', '', 0, 4);
+
 -- --------------------------------------------------------
 
 --
@@ -115,6 +106,16 @@ CREATE TABLE `termintype` (
   `bezeichnung` varchar(50) NOT NULL,
   `ort` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Daten für Tabelle `termintype`
+--
+
+INSERT INTO `termintype` (`id`, `bezeichnung`, `ort`) VALUES
+(1, 'Treffen', 'Definierter Ort'),
+(2, 'Online-Call', 'Definierte Software'),
+(3, 'Meilenstein', ''),
+(4, 'Aufgabe', '');
 
 -- --------------------------------------------------------
 
@@ -133,12 +134,6 @@ CREATE TABLE `wiki-eintrag` (
 --
 -- Indizes der exportierten Tabellen
 --
-
---
--- Indizes für die Tabelle `benutzer`
---
-ALTER TABLE `benutzer`
-  ADD PRIMARY KEY (`id`);
 
 --
 -- Indizes für die Tabelle `studienarbeit`
@@ -176,35 +171,36 @@ ALTER TABLE `wiki-eintrag`
 --
 
 --
--- AUTO_INCREMENT für Tabelle `benutzer`
---
-ALTER TABLE `benutzer`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
---
 -- AUTO_INCREMENT für Tabelle `studienarbeit`
 --
 ALTER TABLE `studienarbeit`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
 --
 -- AUTO_INCREMENT für Tabelle `studienarbeit_betreuer_studierende`
 --
 ALTER TABLE `studienarbeit_betreuer_studierende`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
 --
 -- AUTO_INCREMENT für Tabelle `termin`
 --
 ALTER TABLE `termin`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2001;
+
 --
 -- AUTO_INCREMENT für Tabelle `termintype`
 --
 ALTER TABLE `termintype`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
 --
 -- AUTO_INCREMENT für Tabelle `wiki-eintrag`
 --
 ALTER TABLE `wiki-eintrag`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+COMMIT;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
